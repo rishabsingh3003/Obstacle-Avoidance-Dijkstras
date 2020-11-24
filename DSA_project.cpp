@@ -1,31 +1,30 @@
-// Program to find Dijkstra's shortest path using 
-// priority_queue in STL 
+
 #include<bits/stdc++.h> 
 using namespace std; 
 # define INF 0x3f3f3f3f 
 # define RADIUS 5
 # define MARGIN 3
 # define ONE_RADIAN 0.0174533
-// iPair ==>  Integer Pair 
-typedef pair<int, int> iPair; 
+// intFPair ==>  Integer Float Pair 
+typedef pair<int, float> intFPair; 
 
 class Node
 {
-    int16_t x = 0;
-    int16_t y = 0;
+    float x = 0;
+    float y = 0;
     uint16_t index = 0;
 
 public:
     Node() {};
-    void init_node(uint16_t index_no, int16_t x_point, int16_t y_point);
+    void init_node(uint16_t index_no, float x_point, float y_point);
     float get_distance(Node V);
 
     // value getters
     uint16_t get_index() {return this->index;}
-    int16_t get_x() {return this->x;}
-    int16_t get_y() {return this->y;}
+    float get_x() {return this->x;}
+    float get_y() {return this->y;}
 
-    static const void get_node_coordinates(int16_t obstacle_x, int16_t obstacle_y, uint8_t index, int16_t &node_x, int16_t &node_y);
+    static const void get_node_coordinates(float obstacle_x, float obstacle_y, uint8_t index, float &node_x, float &node_y);
 };
 
 class Math
@@ -43,13 +42,13 @@ class Graph
   
     // In a weighted graph, we need to store vertex 
     // and weight pair for every edge 
-    list< pair<int, int> > *adj; 
+    list< pair<int, float> > *adj; 
   
 public: 
     Graph(int V);  // Constructor 
   
     // function to add an edge to graph 
-    void addEdge(int u, int v, int w); 
+    void addEdge(int u, int v, float w); 
   
     // prints shortest path from s 
     void shortestPath(int s, int goal); 
@@ -59,12 +58,12 @@ public:
 
 float const Math::closest_distance(Node start, Node end, Node point)
 {
-    const int16_t start_x = start.get_x();
-    const int16_t start_y = start.get_y();
-    const int16_t end_x = end.get_x();
-    const int16_t end_y = end.get_y();
-    const int16_t point_x = point.get_x();
-    const int16_t point_y = point.get_y();
+    const float start_x = start.get_x();
+    const float start_y = start.get_y();
+    const float end_x = end.get_x();
+    const float end_y = end.get_y();
+    const float point_x = point.get_x();
+    const float point_y = point.get_y();
 
     const float l2 = pow((start_x-end_x),2) + pow((start_y-end_y),2);
     if (l2 < FLT_EPSILON) {
@@ -93,10 +92,10 @@ float const Math::closest_distance(Node start, Node end, Node point)
 Graph::Graph(int V) 
 { 
     this->V = V; 
-    adj = new list<iPair> [V]; 
+    adj = new list<intFPair> [V]; 
 } 
   
-void Graph::addEdge(int u, int v, int w) 
+void Graph::addEdge(int u, int v, float w) 
 { 
     adj[u].push_back(make_pair(v, w)); 
     adj[v].push_back(make_pair(u, w)); 
@@ -106,14 +105,11 @@ void Graph::addEdge(int u, int v, int w)
 void Graph::shortestPath(int src, int goal) 
 { 
     // Create a priority queue to store vertices that 
-    // are being preprocessed. This is weird syntax in C++. 
-    // Refer below link for details of this syntax 
-    // https://www.geeksforgeeks.org/implement-min-heap-using-stl/ 
-    priority_queue< iPair, vector <iPair> , greater<iPair> > pq; 
+    priority_queue< intFPair, vector <intFPair> , greater<intFPair> > pq; 
   
     // Create a vector for distances and initialize all 
     // distances as infinite (INF) 
-    vector<int> dist(V, INF); 
+    vector<float> dist(V, INF); 
   
     // Insert source itself in priority queue and initialize 
     // its distance as 0. 
@@ -136,13 +132,13 @@ void Graph::shortestPath(int src, int goal)
         pq.pop(); 
   
         // 'i' is used to get all adjacent vertices of a vertex 
-        list< pair<int, int> >::iterator i; 
+        list< pair<int, float> >::iterator i; 
         for (i = adj[u].begin(); i != adj[u].end(); ++i) 
         { 
             // Get vertex label and weight of current adjacent 
             // of u. 
             int v = (*i).first; 
-            int weight = (*i).second; 
+            float weight = (*i).second; 
   
             //  If there is shorted path to v through u. 
             if (dist[v] > dist[u] + weight) 
@@ -158,7 +154,7 @@ void Graph::shortestPath(int src, int goal)
     // Print shortest distances stored in dist[] 
     printf("Vertex   Distance from Source\n"); 
     for (int i = 0; i < V; ++i) 
-        printf("%d \t\t %d\n", i, dist[i]); 
+        printf("%d \t\t %f\n", i, dist[i]); 
         int i,k=1;
 		//cout<<"the path is ";
 		for( i=goal;prevvertex[i]!=0;) {
@@ -178,7 +174,7 @@ void Graph::shortestPath(int src, int goal)
         }
 } 
 
-void Node:: init_node(uint16_t index_no, int16_t x_point, int16_t y_point)
+void Node:: init_node(uint16_t index_no, float x_point, float y_point)
 {
     this-> index = index_no;
     this-> x = x_point;
@@ -192,7 +188,7 @@ float Node::get_distance(Node V)
 }
 
 // project to 4 corners of every obstacle
-const void Node::get_node_coordinates(int16_t obstacle_x, int16_t obstacle_y, uint8_t index, int16_t &node_x, int16_t &node_y)
+const void Node::get_node_coordinates(float obstacle_x, float obstacle_y, uint8_t index, float &node_x, float &node_y)
 {
     switch (index) {
         case 0:
@@ -238,13 +234,13 @@ int main()
     Node* robot_location = new Node[2]; // 0 -> current loc, 1 -> Goal
    
     cout << "Enter Robots Current Location";
-    int16_t start_x = 0;
-    int16_t start_y = 0;
+    float start_x = 0;
+    float start_y = 0;
     cin >> start_x >> start_y;
 
     cout << "enter Robots Final Location";
-    int16_t end_y = 0;
-    int16_t end_x = 0;
+    float end_y = 0;
+    float end_x = 0;
     cin >> end_x >> end_y;
 
     uint16_t obstacle_num = 0;
@@ -259,13 +255,13 @@ int main()
     Node* obstacle_node = new Node[4 * obstacle_num];
 
     for(uint8_t i=0; i < obstacle_num; i++) {
-        int16_t x = 0;
-        int16_t y = 0;
+        float x = 0;
+        float y = 0;
         cout << "Enter location of obstacle";
         cin >> x >> y;
         obstacle[i].init_node(i,x,y);
         for (uint8_t j=0; j < 4; j++) {
-            int16_t node_x, node_y;
+            float node_x, node_y;
             Node::get_node_coordinates(x, y, j, node_x, node_y);
             // reserve first index for robot start location
             // create 4 obstacle node per obstacle
