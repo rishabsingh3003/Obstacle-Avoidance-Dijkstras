@@ -1,10 +1,10 @@
-
 #include<bits/stdc++.h> 
 using namespace std; 
 # define INF 0x3f3f3f3f 
 # define RADIUS 5
 # define MARGIN 3
 # define ONE_RADIAN 0.0174533
+# define ARRAY_SIZE 200
 // intFPair ==>  Integer Float Pair 
 typedef pair<int, float> intFPair; 
 
@@ -51,7 +51,7 @@ public:
     void addEdge(int u, int v, float w); 
   
     // prints shortest path from s 
-    void shortestPath(int s, int goal); 
+    int* shortestPath(int s, int goal, int& navigation_count); 
     
     static const bool intersect(Node obstacle, float radius, Node graph_node_start, Node graph_node_end);
 }; 
@@ -102,7 +102,7 @@ void Graph::addEdge(int u, int v, float w)
 } 
   
 // Prints shortest paths from src to all other vertices 
-void Graph::shortestPath(int src, int goal) 
+int* Graph::shortestPath(int src, int goal, int& navigation_count) 
 { 
     // Create a priority queue to store vertices that 
     priority_queue< intFPair, vector <intFPair> , greater<intFPair> > pq; 
@@ -115,8 +115,8 @@ void Graph::shortestPath(int src, int goal)
     // its distance as 0. 
     pq.push(make_pair(0, src)); 
     dist[src] = 0; 
-    int prevvertex[200];
-    int finalpath[20];
+    int prevvertex[ARRAY_SIZE];
+    static int finalpath[ARRAY_SIZE];
 
     /* Looping till priority queue becomes empty (or all 
       distances are not finalized) */
@@ -150,28 +150,28 @@ void Graph::shortestPath(int src, int goal)
             } 
         } 
     } 
-  
+
+    // uncomment to print output
     // Print shortest distances stored in dist[] 
-    printf("Vertex   Distance from Source\n"); 
-    for (int i = 0; i < V; ++i) 
-        printf("%d \t\t %f\n", i, dist[i]); 
-        int i,k=1;
-		//cout<<"the path is ";
-		for( i=goal;prevvertex[i]!=0;) {
-		    if(prevvertex[i]!=0)
-		    {
-		        finalpath[k]=i;
-		    }
-		     
-            i=prevvertex[i];  
-            k++;
-		}
-        finalpath[k+1]=src;
-		finalpath[k]=i;
-	
-        for (i=k+1; i>0; i--) {
-            cout<<finalpath[i]<<" ";
+    // printf("Vertex   Distance from Source\n"); 
+    // for (int i = 0; i < V; ++i) 
+        // printf("%d \t\t %f\n", i, dist[i]); 
+    
+    int i,k=1;
+    for( i=goal;prevvertex[i]!=0;) {
+        if(prevvertex[i]!=0)
+        {
+            finalpath[k]=i;
         }
+            
+        i=prevvertex[i];  
+        k++;
+    }
+    finalpath[k+1]=src;
+    finalpath[k]=i;
+
+    navigation_count = k;
+    return finalpath;
 } 
 
 void Node:: init_node(uint16_t index_no, float x_point, float y_point)
@@ -233,18 +233,18 @@ int main()
     // Create new nodes for current location and end location
     Node* robot_location = new Node[2]; // 0 -> current loc, 1 -> Goal
    
-    cout << "Enter Robots Current Location";
+    cout << "Enter Robots Current Location \n";
     float start_x = 0;
     float start_y = 0;
     cin >> start_x >> start_y;
 
-    cout << "enter Robots Final Location";
+    cout << "enter Robots Final Location \n";
     float end_y = 0;
     float end_x = 0;
     cin >> end_x >> end_y;
 
     uint16_t obstacle_num = 0;
-    cout << "Enter the number of Obstacles";
+    cout << "Enter the number of Obstacles \n";
     cin >> obstacle_num;
 
     robot_location[0].init_node(0, start_x, start_y);
@@ -257,7 +257,7 @@ int main()
     for(uint8_t i=0; i < obstacle_num; i++) {
         float x = 0;
         float y = 0;
-        cout << "Enter location of obstacle";
+        cout << "Enter location of obstacle \n";
         cin >> x >> y;
         obstacle[i].init_node(i,x,y);
         for (uint8_t j=0; j < 4; j++) {
@@ -340,7 +340,14 @@ int main()
         }
     }
     
-    g.shortestPath(robot_location[0].get_index(), robot_location[1].get_index()); 
-  
+    int navigation_count = 0;
+    int* vertex_array = g.shortestPath(robot_location[0].get_index(), robot_location[1].get_index(), navigation_count); 
+
+    cout << "safe path is";
+    cout << "("<< robot_location[0].get_x() << ", " << robot_location[0].get_y() << ") \n";  
+    for (int i=navigation_count; i>1; i--) {
+        cout << "("<< obstacle_node[vertex_array[i]].get_x() << ", " << obstacle_node[vertex_array[i]].get_y() << ") \n";
+    }
+    cout << "("<< robot_location[1].get_x() << ", " << robot_location[1].get_y() << ") \n";  
     return 0; 
 } 
