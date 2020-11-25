@@ -8,15 +8,20 @@ using namespace std;
 // intFPair ==>  Integer Float Pair 
 typedef pair<int, float> intFPair; 
 
+// This class is used to store node and give access to them. Also provides methods to use them. 
 class Node
-{
+{   
+    // Node coordinates
     float x = 0;
     float y = 0;
     uint16_t index = 0;
 
 public:
     Node() {};
+    // initialize the node
     void init_node(uint16_t index_no, float x_point, float y_point);
+    
+    // get euclidean distance from this node to node V
     float get_distance(Node V);
 
     // value getters
@@ -24,18 +29,25 @@ public:
     float get_x() {return this->x;}
     float get_y() {return this->y;}
 
+    // projects nodes in different direction according to index
     static const void get_node_coordinates(float obstacle_x, float obstacle_y, uint8_t index, float &node_x, float &node_y);
 };
 
+// This class contains basic math funtions needed for this program
 class Math
 {   
 public:
+    
+    // constructor 
     Math() {}; 
+    
+    // closest distance between a line connected from start -> end, and a point
     static const float closest_distance(Node start, Node end, Node point);
 };
   
 // This class represents a directed graph using 
 // adjacency list representation 
+// It also contains Dijkstra's implementation
 class Graph 
 { 
     int V;    // No. of vertices 
@@ -53,6 +65,7 @@ public:
     // prints shortest path from s 
     int* shortestPath(int s, int goal, int& navigation_count); 
     
+    // True if obstacle is less than radius distance away from line formed between graph_node_start -> graph_node_end
     static const bool intersect(Node obstacle, float radius, Node graph_node_start, Node graph_node_end);
 }; 
 
